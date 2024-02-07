@@ -1,0 +1,27 @@
+__pycache__
+*.pyc
+*.pyo
+*.pyd
+.Python
+# env
+.md
+.venv
+venv
+# ENV
+build
+dist
+*.egg-info
+.installed.cfg
+*.egg
+static/
+.pytest_cache/
+.vscode/
+docs/
+__pycache__
+test/
+.git
+.gitignore
+*.pyc
+*.pyo
+*.pyd
+.env.test

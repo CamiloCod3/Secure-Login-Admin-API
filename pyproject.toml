@@ -1,0 +1,28 @@
+[tool.poetry]
+name = "securelogin_fastapi"
+version = "0.1.0"
+description = ""
+authors = ["Camilo <55490613+sc1ptkid@users.noreply.github.com>"]
+license = "MIT"
+
+[tool.poetry.dependencies]
+python = "^3.11"
+asyncpg = "0.29.0"
+psycopg2-binary = "2.9.9"
+python-dotenv = "1.0.0"
+SQLAlchemy = "2.0.23"
+typing-extensions = "4.8.0"
+pydantic-core = "2.14.3"
+pydantic = "2.5.1"
+uvicorn = "^0.24.0.post1"
+fastapi = "^0.104.1"
+python-multipart = "^0.0.6"
+passlib = "^1.7.4"
+bcrypt = "4.0.1"
+python-jose = {extras = ["cryptography"], version = "^3.3.0"}
+pydantic-settings = "^2.1.0"
+email-validator = "^2.1.0.post1"
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"
