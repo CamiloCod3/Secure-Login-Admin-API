@@ -1,5 +1,3 @@
-Here's a more concise and playful, yet professional README.md for your project:
-
 ---
 
 # FastAPI Secure Login: A DevSecOps Adventure 🚀🔐
