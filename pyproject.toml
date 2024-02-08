@@ -22,6 +22,7 @@ bcrypt = "4.0.1"
 python-jose = {extras = ["cryptography"], version = "^3.3.0"}
 pydantic-settings = "^2.1.0"
 email-validator = "^2.1.0.post1"
+slowapi = "^0.1.9"
 
 [build-system]
 requires = ["poetry-core"]

@@ -16,22 +16,23 @@ logger = logging.getLogger(__name__)
 
 async def get_current_user(token: str = Depends(oauth2_scheme), db: AsyncSession  = Depends(get_db)) -> UserModel:
     """
-    Asynchronously retrieves the current user based on a provided JWT token.
+    Asynchronously authenticates and retrieves the current user from the database.
 
-    This function decodes the JWT token to extract user information and queries the database to retrieve the user model.
-    If the user is not found, or if the token is invalid or expired, an HTTP 401 Unauthorized exception is raised.
+    Utilizes a JWT token to authenticate the user by decoding it and querying the database for the user details.
+    Primarily used as a dependency in secured endpoints to ensure that the requester is authenticated. Raises an
+    HTTP 401 Unauthorized exception if the token is invalid, expired, or the user doesn't exist, ensuring secure
+    access control.
 
     Args:
-    - token (str): A JWT token used for user authentication. Default dependency is `oauth2_scheme`.
-    - db (AsyncSession): An asynchronous session to the database. Default dependency is `get_db`.
+        token (str): JWT token for authentication, extracted from the request headers.
+        db (AsyncSession): Async database session for querying user data.
 
     Returns:
-    - UserModel: The user model of the authenticated user.
+        UserModel: Authenticated user's model instance from the database.
 
     Raises:
-    - HTTPException: With a 401 status code if the user cannot be authenticated or if any other exception occurs during the process.
+        HTTPException: 401 Unauthorized if authentication fails.
     """
-
 
     credentials_exception = HTTPException(
         status_code=status.HTTP_401_UNAUTHORIZED,
@@ -56,3 +57,28 @@ async def get_current_user(token: str = Depends(oauth2_scheme), db: AsyncSession
     except Exception as e:
         logger.error(f"Unexpected Error: {e}")
         raise credentials_exception
+    
+
+async def is_admin_user(current_user: UserModel = Depends(get_current_user)) -> UserModel:
+    """
+    Verifies that the current authenticated user is an admin.
+
+    This function is intended to be used as a dependency in FastAPI endpoints that require the user
+    to have admin privileges. It raises an HTTP 403 Forbidden exception if the current user is not an admin.
+
+    Args:
+        current_user (UserModel): The user model instance of the currently authenticated user, 
+                                  obtained from `get_current_user`.
+
+    Returns:
+        UserModel: The model instance of the admin user if the check passes.
+
+    Raises:
+        HTTPException: 403 Forbidden if the current user is not an admin.
+    """
+    if not current_user.is_admin:
+        raise HTTPException(
+            status_code=status.HTTP_403_FORBIDDEN,
+            detail="Insufficient permissions"
+        )
+    return current_user

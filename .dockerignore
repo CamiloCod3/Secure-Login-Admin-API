@@ -1,13 +1,10 @@
 __pycache__
-*.pyc
-*.pyo
+*.py[co]
 *.pyd
 .Python
-# env
-.md
+
 .venv
 venv
-# ENV
 build
 dist
 *.egg-info
@@ -17,11 +14,8 @@ static/
 .pytest_cache/
 .vscode/
 docs/
-__pycache__
 test/
 .git
 .gitignore
-*.pyc
-*.pyo
-*.pyd
 .env.test
+.env.example

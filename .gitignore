@@ -1,24 +1,18 @@
 # Environment secrets
-.env
+.env*
 # AppMap Output
-app/tmp/appmap
 
 # Database cache or local files
 *.db
 # *.sql
-*.sqlite
-*.sqlite3
-*.json
+*.sqlite*
+*.json  # Be cautious if you have essential JSON files
+
 # Python byte-compiled files
 __pycache__/
 *.py[cod]
 *$py.class
-static/
-.env.test
-# Docker volumes
-volumes/
 
-# Docker container logs
+# Docker artifacts
+volumes/
 docker-logs/
-static/index.html
-static/prototype.html
