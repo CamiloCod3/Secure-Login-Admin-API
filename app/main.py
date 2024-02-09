@@ -1,9 +1,12 @@
 import logging
-# Related third-party imports
 from fastapi import FastAPI, HTTPException
+from slowapi import Limiter, _rate_limit_exceeded_handler  # Keep this if you're using custom limiters or handlers
 from slowapi.errors import RateLimitExceeded
-from slowapi import _rate_limit_exceeded_handler
-# Local application/library specific imports
+
+from slowapi.middleware import SlowAPIMiddleware
+from slowapi.util import get_remote_address
+
+# Import the Limiter instance from your utility module
 from .utils.rate_limiter import limiter
 from .schemas.config_schema import settings
 from .endpoints import auth_endpoints
@@ -22,8 +25,13 @@ app = FastAPI(
     openapi_url="/openapi.json" if settings.enable_docs else None
 )
 
-# Attach the limiter instance to FastAPI app
+# Ensure the limiter instance is correctly attached to the FastAPI app
 app.state.limiter = limiter
+
+# Add the SlowAPI middleware to the app
+app.add_middleware(SlowAPIMiddleware, limiter=limiter)
+
+# Attach the rate limit exceeded handler
 app.add_exception_handler(RateLimitExceeded, _rate_limit_exceeded_handler)
 
 # Configure CORS settings
