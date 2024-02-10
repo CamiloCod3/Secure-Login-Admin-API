@@ -1,5 +1,5 @@
 import logging
-from fastapi import Depends, HTTPException, status
+from fastapi import Depends, HTTPException, Cookie, status
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.future import select
 from jose import JWTError
@@ -14,25 +14,24 @@ from .jwt_utils import decode_access_token
 logger = logging.getLogger(__name__)
 
 
-async def get_current_user(token: str = Depends(oauth2_scheme), db: AsyncSession  = Depends(get_db)) -> UserModel:
+async def get_current_user(token: str = Cookie(None), db: AsyncSession = Depends(get_db)) -> UserModel:
     """
-    Asynchronously authenticates and retrieves the current user from the database.
+    Authenticates and retrieves the current user based on a provided JWT token.
 
-    Utilizes a JWT token to authenticate the user by decoding it and querying the database for the user details.
-    Primarily used as a dependency in secured endpoints to ensure that the requester is authenticated. Raises an
-    HTTP 401 Unauthorized exception if the token is invalid, expired, or the user doesn't exist, ensuring secure
-    access control.
+    This function decodes the JWT token to extract user information and retrieves the user's details from the database.
+    It's used to authenticate requests in secured endpoints. If the token is invalid, expired, or if the user does not exist,
+    an HTTP 401 Unauthorized exception is raised.
 
     Args:
-        token (str): JWT token for authentication, extracted from the request headers.
-        db (AsyncSession): Async database session for querying user data.
+        token (str): JWT token for authentication, typically extracted from cookies or authorization headers.
+        db (AsyncSession): Database session for user data retrieval.
 
     Returns:
-        UserModel: Authenticated user's model instance from the database.
+        UserModel: The authenticated user's database model instance.
 
     Raises:
-        HTTPException: 401 Unauthorized if authentication fails.
-    """
+        HTTPException: 401 Unauthorized if token validation fails.
+"""    
 
     credentials_exception = HTTPException(
         status_code=status.HTTP_401_UNAUTHORIZED,

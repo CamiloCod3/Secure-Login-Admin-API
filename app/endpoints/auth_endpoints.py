@@ -1,5 +1,5 @@
 import logging
-from fastapi import APIRouter, HTTPException, Depends, status, Request, Response
+from fastapi import APIRouter, HTTPException, status, Request, Response, Cookie, Depends
 from fastapi.security import OAuth2PasswordRequestForm
 from sqlalchemy.ext.asyncio import AsyncSession
 from jose import JWTError
@@ -21,7 +21,7 @@ async def login(
     request: Request,  # Include Request for SlowAPI
     response: Response,
     form_data: OAuth2PasswordRequestForm = Depends(),
-    db: AsyncSession = Depends(get_db)    
+    db: AsyncSession = Depends(oauth2_scheme)    
 ):
     """
     Authenticate a user and return JWT access and refresh tokens.
@@ -67,28 +67,19 @@ async def login(
 @router.post("/refresh_token")
 async def refresh_token(
     response: Response,
-    current_token: str = Depends(oauth2_scheme),
-    db: AsyncSession = Depends(get_db)    
+    db: AsyncSession = Depends(get_db),
+    refresh_token: str = Cookie(None, alias="refresh_token")  # Extract refresh token from cookies
 ):
-    """
-    Refresh JWT access tokens using a valid refresh token.
-
-    This endpoint validates the provided refresh token and issues a new access token if the
-    refresh token is valid. The new access token is returned as an HTTP-only cookie.
-
-    Args:
-        response: FastAPI response object, used to set the new access token cookie.
-        current_token: The refresh token extracted from the request's cookies.
-        db: Database session dependency injection for potential user verification.
+    if refresh_token is None:
+        raise HTTPException(
+            status_code=status.HTTP_401_UNAUTHORIZED,
+            detail="Refresh token missing",
+            headers={"WWW-Authenticate": "Bearer"}
+        )
     
-    Raises:
-        HTTPException: 401 error if the refresh token is invalid or expired.    
-    Returns:
-        A success message indicating the access token has been refreshed.
-    """
     try:
-        # Verify the current token and get a new access token
-        user_email = jwt_utils.verify_token(current_token, credentials_exception=HTTPException(
+        # Verify the refresh token and get a new access token
+        user_email = jwt_utils.verify_token(refresh_token, credentials_exception=HTTPException(
             status_code=status.HTTP_401_UNAUTHORIZED,
             detail="Invalid token",
             headers={"WWW-Authenticate": "Bearer"}
