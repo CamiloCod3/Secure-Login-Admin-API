@@ -1,40 +1,50 @@
-from fastapi import APIRouter, HTTPException, status, Depends, Response, Cookie
+from fastapi import APIRouter, HTTPException, status, Depends, Response
 from sqlalchemy.ext.asyncio import AsyncSession
+from typing import Any
 
 from ..database import get_db
-from ..schemas.user_schemas import UserCreateSchema
-from ..crud.user_crud import create_user, get_user_by_email
-from ..models.user_models import UserModel
 from ..auth.dependencies import get_current_user, is_admin_user
-from ..schemas.config_schema import settings
+from ..models.user_models import UserModel
+from ..schemas.user_schemas import UserCreateSchema, UserCreateResponseSchema
+from ..crud.user_crud import get_user_by_email, create_user
 
 router = APIRouter()
 
-@router.post("/users/", response_model=UserCreateSchema, status_code=status.HTTP_201_CREATED)
+@router.post("/users/", response_model=UserCreateResponseSchema, status_code=status.HTTP_201_CREATED)
 async def create_user_endpoint(
     response: Response,
-    user: UserCreateSchema, 
+    user: UserCreateSchema,
     db: AsyncSession = Depends(get_db),
-    # This line ensures we are ready to receive the token from cookies.
-    # The actual extraction and validation happen in the get_current_user dependency.
-    current_user: UserModel = Depends(get_current_user)):
-    # The admin check is performed on the current_user obtained from the dependency.
-    # This means the token has already been validated, and the user's admin status has been verified.
-    if not current_user.is_admin:
-        raise HTTPException(
-            status_code=status.HTTP_403_FORBIDDEN,
-            detail="Insufficient permissions"
-        )
-    
-    db_user = await get_user_by_email(db, email=user.email)
-    if db_user:
+    _current_authenticated_user: UserModel = Depends(get_current_user),  # Authenticate the user
+    _current_user: UserModel = Depends(is_admin_user)  # Authorize admin-only access
+) -> Any:
+    """
+    Creates a new user in the system with specified details.
+
+    This endpoint is protected and requires admin privileges. It validates the provided user details against the UserCreateSchema,
+    checks if the email is not already registered, hashes the password, and stores the new user in the database.
+    Finally, it returns the created user details excluding the password hash.
+
+    Parameters:
+    - response (Response): The response object used to set cookies or modify the HTTP response.
+    - user (UserCreateSchema): The user details from the request body. Expected schema includes email, password, name, and is_admin flag.
+    - db (AsyncSession): Dependency injection of the database session for executing database operations.
+    - _current_authenticated_user (UserModel): The current authenticated user performing the request, injected automatically.
+    - _current_user (UserModel): Ensures that the endpoint is accessed by an admin user, injected automatically.
+
+    Returns:
+    - UserCreateResponseSchema: The created user's details, including id, email, name, and is_admin flag. 
+
+    The function uses SQLAlchemy for database interactions and Pydantic for request and response serialization.
+    """
+    # Check if email is already registered
+    existing_user = await get_user_by_email(db, user.email)
+    if existing_user:
         raise HTTPException(status_code=400, detail="Email already registered")
-    
-    # Creating a new user
-    user_data = user.model_dump()  # Ensure you are using .dict() method correctly as per Pydantic version
-    created_user = await create_user(db=db, user=user_data)
-    
-    # Optionally, set a new token or update response if needed
-    # For example, you could return a confirmation message or the created user data
-    
-    return created_user
+
+    # Use CRUD function to create new user
+    new_user = await create_user(db, user.model_dump())
+
+    # Create a Pydantic model instance from the ORM model
+    response_model = UserCreateResponseSchema.model_validate(new_user, from_attributes=True)
+    return response_model

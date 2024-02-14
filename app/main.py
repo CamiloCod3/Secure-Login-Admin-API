@@ -1,8 +1,8 @@
 import logging
 from fastapi import FastAPI, HTTPException
 from slowapi.middleware import SlowAPIMiddleware
-# Import the Limiter instance from your utility module
-from .utils.rate_limiter import limiter
+
+from .utils.rate_limiter import limiter # Limiter instance from utility module
 from .schemas.config_schema import settings
 from .endpoints import auth_endpoints, user_endpoints
 from .utils.error_handlers import http_exception_handler

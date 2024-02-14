@@ -8,18 +8,15 @@ class UserModel(Base):
     """
     __tablename__ = "users"
 
-    id: int = Column(Integer, primary_key=True)
-    email: str = Column(String(255), unique=True, index=True)
-    password_hash: str = Column(String(60))  # Bcrypt hash length
-    name: str = Column(String(255))
-    is_admin: bool = Column(Boolean, default=False)
+    id = Column(Integer, primary_key=True)
+    email = Column(String(255), unique=True, index=True)
+    password_hash = Column(String(255))  # Adjust the length as per your hash algorithm
+    name = Column(String(255))
+    is_admin = Column(Boolean, default=False)
 
     def verify_password(self, password: str) -> bool:
         """
         Verify a password against the stored password hash.
-
-        :param password: Plain text password to verify.
-        :return: True if the password is correct, False otherwise.
         """
         return pwd_context.verify(password, self.password_hash)
 

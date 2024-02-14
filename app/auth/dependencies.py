@@ -1,83 +1,66 @@
 import logging
-from fastapi import Depends, HTTPException, Cookie, status
+from fastapi import Depends, HTTPException, status, Cookie
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.future import select
 from jose import JWTError
 
 from ..models.user_models import UserModel
 from ..database import get_db
-from .oauth2_config import oauth2_scheme
-from .jwt_utils import decode_access_token
-
-
+from .jwt_utils import verify_token
+from ..schemas.config_schema import settings # Indirect accesed
 
 logger = logging.getLogger(__name__)
 
-
-async def get_current_user(token: str = Cookie(None), db: AsyncSession = Depends(get_db)) -> UserModel:
+async def get_current_user(db: AsyncSession = Depends(get_db), token: str = Cookie(None, alias="access_token")) -> UserModel:
     """
-    Authenticates and retrieves the current user based on a provided JWT token.
-
-    This function decodes the JWT token to extract user information and retrieves the user's details from the database.
-    It's used to authenticate requests in secured endpoints. If the token is invalid, expired, or if the user does not exist,
-    an HTTP 401 Unauthorized exception is raised.
+    Retrieves the authenticated user based on a JWT token from cookies.
 
     Args:
-        token (str): JWT token for authentication, typically extracted from cookies or authorization headers.
-        db (AsyncSession): Database session for user data retrieval.
+        db: Database session for user data querying.
+        token: JWT token for authentication.
 
     Returns:
-        UserModel: The authenticated user's database model instance.
+        The authenticated UserModel instance or raises HTTPException for errors.
+    """
 
-    Raises:
-        HTTPException: 401 Unauthorized if token validation fails.
-"""    
+    if not token:
+        raise HTTPException(
+            status_code=status.HTTP_401_UNAUTHORIZED,
+            detail="JWT token is missing",
+            headers={"WWW-Authenticate": "Bearer"},
+        )
 
-    credentials_exception = HTTPException(
-        status_code=status.HTTP_401_UNAUTHORIZED,
-        detail="Could not validate credentials",
-        headers={"WWW-Authenticate": "Bearer"},
-    )
-    
     try:
-        payload = decode_access_token(token)
-        result = await db.execute(select(UserModel).filter(UserModel.email == payload.get("sub")))
-        user = result.scalars().first()
-        
+        payload = verify_token(token, credentials_exception=HTTPException(
+            status_code=status.HTTP_401_UNAUTHORIZED,
+            detail="Could not validate credentials",
+            headers={"WWW-Authenticate": "Bearer"},
+        ))
+        email: str = payload.get("sub")
+        if email is None:
+            raise HTTPException(status_code=400, detail="Invalid JWT token")
+        user_query = select(UserModel).filter(UserModel.email == email)
+        user = await db.execute(user_query)
+        user = user.scalars().first()
         if user is None:
-            raise credentials_exception
-
+            raise HTTPException(status_code=400, detail="User not found")
         return user
+    except JWTError:
+        raise HTTPException(status_code=401, detail="Invalid JWT token")
 
-    except JWTError as e:
-        logger.error(f"JWT Error: {e}")
-        raise credentials_exception
 
-    except Exception as e:
-        logger.error(f"Unexpected Error: {e}")
-        raise credentials_exception
-    
 
 async def is_admin_user(current_user: UserModel = Depends(get_current_user)) -> UserModel:
     """
-    Verifies that the current authenticated user is an admin.
-
-    This function is intended to be used as a dependency in FastAPI endpoints that require the user
-    to have admin privileges. It raises an HTTP 403 Forbidden exception if the current user is not an admin.
+    Verifies if the authenticated user has admin privileges.
 
     Args:
-        current_user (UserModel): The user model instance of the currently authenticated user, 
-                                  obtained from `get_current_user`.
+        current_user: The authenticated UserModel instance.
 
     Returns:
-        UserModel: The model instance of the admin user if the check passes.
-
-    Raises:
-        HTTPException: 403 Forbidden if the current user is not an admin.
+        The UserModel if admin, otherwise raises HTTPException for insufficient privileges.
     """
+    
     if not current_user.is_admin:
-        raise HTTPException(
-            status_code=status.HTTP_403_FORBIDDEN,
-            detail="Insufficient permissions"
-        )
+        raise HTTPException(status_code=403, detail="The user doesn't have enough privileges")
     return current_user

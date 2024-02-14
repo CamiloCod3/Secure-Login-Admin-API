@@ -30,20 +30,20 @@ Attributes:
     """
     # Essential JWT settings
     secret_key: str
-    algorithm: str = "HS256"  # Adding algorithm here for JWT operations
+    algorithm: str = "HS256"
     access_token_expires_delta: int = 30  # Expires in 30 minutes
     refresh_token_expires_delta: int = 1440  # Expires in 24 hours (1440 minutes)
 
     # Admin user configuration
     admin_email: EmailStr
     admin_password: str
-    admin_name: str = 'Admin'  # Default admin name, override if necessary
+    admin_name: str = 'Admin' 
 
     # Server configuration    
     use_ssl: bool = True
     secure_cookie: bool = True # Toggle for secure cookies, defaulting to True for security
     enable_docs: bool = False      
-    log_level: str = 'ERROR'  # Default log level
+    log_level: str = 'ERROR'
 
     class Config:
         """
