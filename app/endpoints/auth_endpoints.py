@@ -64,7 +64,10 @@ async def login(
         samesite='Lax'  # Helps prevent CSRF attacks
     )  
 
-    return {"message": "Login successful"}
+    return {
+    "message": "Login successful",
+    "is_admin": user.is_admin  
+}
 
 
 @router.post("/refresh_token")

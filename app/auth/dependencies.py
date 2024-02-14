@@ -6,7 +6,7 @@ from jose import JWTError
 
 from ..models.user_models import UserModel
 from ..database import get_db
-from .jwt_utils import verify_token
+from .jwt_utils import JWTTokenHandler
 from ..schemas.config_schema import settings # Indirect accesed
 
 logger = logging.getLogger(__name__)
@@ -31,7 +31,7 @@ async def get_current_user(db: AsyncSession = Depends(get_db), token: str = Cook
         )
 
     try:
-        payload = verify_token(token, credentials_exception=HTTPException(
+        payload = JWTTokenHandler.verify_token(token, credentials_exception=HTTPException(
             status_code=status.HTTP_401_UNAUTHORIZED,
             detail="Could not validate credentials",
             headers={"WWW-Authenticate": "Bearer"},
