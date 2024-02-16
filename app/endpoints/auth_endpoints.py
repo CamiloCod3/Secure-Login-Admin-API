@@ -18,7 +18,6 @@ router = APIRouter()
 
 oauth2_scheme = OAuth2PasswordBearerWithCookie(tokenUrl="/token")
 
-
 @router.post("/token")
 @limiter.limit("5/minute")
 async def login(
