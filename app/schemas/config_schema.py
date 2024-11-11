@@ -1,6 +1,6 @@
 from dotenv import load_dotenv
 from pydantic_settings import BaseSettings
-from pydantic import EmailStr, Field, AnyUrl
+from pydantic import EmailStr, Field
 
 # Load environment variables from the .env file
 load_dotenv()
@@ -9,7 +9,7 @@ class Settings(BaseSettings):
     """
     Application configuration settings derived from environment variables.
     """
-    database_url: AnyUrl
+    database_url: str
     # Essential JWT settings
     secret_key: str = Field(..., description="Secret key for JWT encoding")
     algorithm: str = "HS256"

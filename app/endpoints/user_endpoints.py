@@ -1,4 +1,4 @@
-from fastapi import APIRouter, HTTPException, status, Depends, Response
+from fastapi import APIRouter, HTTPException, status, Depends, Response, Request
 from sqlalchemy.ext.asyncio import AsyncSession
 from typing import Any
 
@@ -14,6 +14,7 @@ router = APIRouter()
 @router.post("/users/", response_model=UserCreateResponseSchema, status_code=status.HTTP_201_CREATED)
 @limiter.limit("5/minute")  # Set rate limit
 async def create_user_endpoint(
+    request: Request,  # Added request argument for rate limiting
     response: Response,
     user: UserCreateSchema,
     db: AsyncSession = Depends(get_db),

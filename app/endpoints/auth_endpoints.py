@@ -1,8 +1,9 @@
 import logging
 from fastapi import APIRouter, HTTPException, status, Request, Response, Cookie, Depends
-from fastapi.security import OAuth2PasswordRequestForm
+from fastapi.security import OAuth2PasswordBearer, OAuth2PasswordRequestForm
 from sqlalchemy.ext.asyncio import AsyncSession
-from jose import JWTError
+import jwt
+from jwt.exceptions import PyJWTError
 
 from ..database import get_db
 from ..auth import password_utils
@@ -16,12 +17,12 @@ logger = logging.getLogger(__name__)
 
 router = APIRouter()
 
-oauth2_scheme = OAuth2PasswordBearerWithCookie(tokenUrl="/token")
+oauth2_scheme = OAuth2PasswordBearer(tokenUrl="/token")
 
 @router.post("/token")
 @limiter.limit("5/minute")
 async def login(
-    request: Request,
+    request: Request,  # Required for rate limiting
     response: Response,
     form_data: OAuth2PasswordRequestForm = Depends(),
     db: AsyncSession = Depends(get_db)
@@ -56,6 +57,7 @@ async def login(
 @router.post("/refresh_token")
 @limiter.limit("10/minute")
 async def refresh_token(
+    request: Request,  # Required for rate limiting
     response: Response,
     db: AsyncSession = Depends(get_db),
     refresh_token: str = Cookie(None, alias="refresh_token")
@@ -74,7 +76,7 @@ async def refresh_token(
         user_email = JWTTokenHandler.verify_token(refresh_token, credentials_exception=HTTPException(
             status_code=status.HTTP_401_UNAUTHORIZED,
             detail="Invalid token",
-            headers={"WWW-Authenticate": "Bearer"}
+            headers={"WWW-Authenticate": "Bearer"},
         ))["sub"]
 
         new_access_token = JWTTokenHandler.create_access_token(data={"sub": user_email})
@@ -90,7 +92,7 @@ async def refresh_token(
         logger.info(f"Access token refreshed successfully for user {user_email}.")
         return {"message": "Access token refreshed successfully"}
     
-    except JWTError:
+    except PyJWTError:
         logger.error("Invalid refresh token attempt.")
         raise HTTPException(
             status_code=status.HTTP_401_UNAUTHORIZED,
@@ -99,7 +101,8 @@ async def refresh_token(
         )
 
 @router.post("/logout")
-async def logout(response: Response):
+@limiter.limit("5/minute")
+async def logout(request: Request, response: Response):
     """Clear the HTTP-only access and refresh token cookies from the client."""
     JWTTokenHandler.clear_refresh_token_cookie(response)
     JWTTokenHandler.clear_access_token_cookie(response)

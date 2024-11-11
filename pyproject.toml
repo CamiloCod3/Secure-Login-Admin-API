@@ -20,10 +20,10 @@ fastapi = ">=0.115.3,<0.116.0" # Latest FastAPI version range
 python-multipart = "^0.0.7"
 passlib = "^1.7.4"
 bcrypt = "4.0.1"
-python-jose = {extras = ["cryptography"], version = "^3.3.0"}
 pydantic-settings = "^2.1.0"
 email-validator = "^2.1.0.post1"
 slowapi = "^0.1.9"
+pyjwt = "2.9.0"
 
 [build-system]
 requires = ["poetry-core"]
