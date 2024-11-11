@@ -1,8 +1,9 @@
 [tool.poetry]
+package-mode = false
 name = "securelogin_fastapi"
 version = "0.1.0"
 description = ""
-authors = ["Camilo <55490613+sc1ptkid@users.noreply.github.com>"]
+authors = ["CamiloCod3"]
 license = "MIT"
 
 [tool.poetry.dependencies]
@@ -11,12 +12,12 @@ asyncpg = "0.29.0"
 psycopg2-binary = "2.9.9"
 python-dotenv = "1.0.0"
 SQLAlchemy = "2.0.23"
-typing-extensions = "4.8.0"
-pydantic-core = "2.14.3"
-pydantic = "2.5.1"
+typing-extensions = "^4.12.2"  # Updated version to match pydantic requirements
+pydantic-core = "2.18.1"       # Match a compatible core version
+pydantic = ">=2.7.0,<3.0.0"    # Compatible pydantic version
 uvicorn = "^0.24.0.post1"
-fastapi = "^0.104.1"
-python-multipart = "^0.0.6"
+fastapi = ">=0.115.3,<0.116.0" # Latest FastAPI version range
+python-multipart = "^0.0.7"
 passlib = "^1.7.4"
 bcrypt = "4.0.1"
 python-jose = {extras = ["cryptography"], version = "^3.3.0"}
