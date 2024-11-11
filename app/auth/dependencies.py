@@ -7,7 +7,7 @@ from jose import JWTError
 from ..models.user_models import UserModel
 from ..database import get_db
 from .jwt_utils import JWTTokenHandler
-from ..schemas.config_schema import settings # Indirect accesed
+from ..schemas.config_schema import settings
 
 logger = logging.getLogger(__name__)
 

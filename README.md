@@ -1,6 +1,6 @@
 # FastAPI Secure Login & Admin API 🚀🔐
 
-Welcome to my FastAPI Secure Login & Admin API project! 🎉 This started as a learning adventure into the world of API security, and it’s packed with practical features like secure user authentication, rate limiting, and a few other tricks for keeping things safe and smooth. This project isn’t just a simple API—it’s a roadmap for anyone interested in getting serious about security in modern API development.
+Welcome to my FastAPI Secure Login & Admin API project! 🎉 This started as a learning adventure into the world of API security, and it’s packed with practical features like secure user authentication, rate limiting, and a few other tricks for keeping things safe and smooth. This project isn’t just a simple API, it’s a roadmap for anyone interested in getting serious about security in modern API development.
 
 ## About This Project
 
