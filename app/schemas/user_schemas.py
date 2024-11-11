@@ -1,7 +1,7 @@
-from pydantic import BaseModel, EmailStr
+from pydantic import BaseModel, EmailStr, Field
 
 class BaseUserModel(BaseModel):
-    class Config:        
+    class Config:
         model_config = {
             "from_attributes": True,
             "populate_by_name": True
@@ -17,7 +17,7 @@ class BaseUserModel(BaseModel):
 
 class UserCreateSchema(BaseUserModel):
     email: EmailStr
-    password: str
+    password: str = Field(..., min_length=8, description="Password must be at least 8 characters long")
     name: str
     is_admin: bool = False
 

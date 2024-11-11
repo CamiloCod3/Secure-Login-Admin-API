@@ -9,7 +9,8 @@ from app.auth.password_utils import hash_password
 from app.schemas.config_schema import settings  # Adjust the import path as necessary
 
 # Set up logging
-logging.basicConfig(level=logging.INFO)
+log_level = logging.DEBUG if settings.environment == "development" else logging.INFO
+logging.basicConfig(level=log_level)
 logger = logging.getLogger(__name__)
 
 async def check_admin_exists(db_session, email) -> bool:
@@ -34,6 +35,7 @@ async def create_admin_user(db_session, email, name, password):
         await db_session.refresh(admin_user)
         logger.info(f"Admin user {email} created successfully.")
     except SQLAlchemyError as e:
+        await db_session.rollback()  # Rollback in case of an error
         logger.error(f"Failed to create admin user: {e}")
 
 async def main():
