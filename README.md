@@ -12,7 +12,7 @@ This project was created for learning and demonstration purposes. While it follo
 
 ## 📚 About This Project
 
-This API combines essential security features JWT-based token authentication, rate limiting, and secure cookie handling to create a sturdy base for login and admin management. It’s designed as both a learning tool and a starting point for projects that need a solid foundation in API security. Some features may seem advanced for smaller projects, but they showcase patterns that are adaptable to real-world scenarios.
+This API combines essential security features like JWT-based token authentication, rate limiting, and secure cookie handling to create a sturdy base for login and admin management. It’s designed as both a learning tool and a starting point for projects that need a solid foundation in API security. Some features may seem advanced for smaller projects, but they showcase patterns that are adaptable to real-world scenarios.
 
 ✨ *Think of this as a playground for learning, testing, and evolving API security skills. The goal here is secure functionality that can grow with you.* ✨
 
@@ -33,15 +33,15 @@ You’ll need the following to get started:
 
 - **Python 3.11+**: For the latest features 🐍
 - **PostgreSQL**: Our database of choice for storing user data 🗄️
-- **Docker** (Optional): To make deployment a breeze 🐳
+- **Docker**: To make deployment a breeze 🐳
 
 ### ⚙️ Setup & Run
 
 1. **Clone the Repository**:
 
    ```bash
-   git clone https://github.com//CamiloCod3/Secure-Login-Admin-API.git
-   cd SecureLogin_FastAPI
+   git clone https://github.com/CamiloCod3/Secure-Login-Admin-API.git
+   cd Secure-Login-Admin-API
    ```
 
 2. **Install Dependencies**:
@@ -53,13 +53,7 @@ You’ll need the following to get started:
 3. **Set Up Environment**:
    Copy `.env.example` to `.env`, then add your secrets 🛠️
 
-4. **Launch the Server**:
-
-   ```bash
-   uvicorn main:app --reload
-   ```
-
-5. **Optional Docker Deployment**:
+4. **Launch with Docker**:
 
    ```bash
    docker-compose up --build
@@ -84,4 +78,4 @@ For a production setting, consider adapting certain elements based on your needs
 
 ## 📄 License
 
-Licensed under the **MIT License** use, learn, and build upon it!
+Licensed under the **MIT License** — use, learn, and build upon it!
