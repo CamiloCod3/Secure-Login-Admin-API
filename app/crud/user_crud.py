@@ -6,7 +6,6 @@ from ..auth.password_utils import hash_password
 from ..utils.error_handlers import exception_handler
 from ..models.user_models import UserModel
 
-# Configure logging
 logger = logging.getLogger(__name__)
 
 @exception_handler

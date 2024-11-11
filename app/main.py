@@ -12,7 +12,7 @@ from .middleware.cors_config import setup_cors
 logging.basicConfig(level=settings.log_level.upper())
 logger = logging.getLogger(__name__)
 
-# Create an instance of FastAPI with conditional documentation URLs
+# Create an instance of FastAPI with conditional documentation URL
 app = FastAPI(
     title="Secure Fast API",
     docs_url="/docs" if settings.enable_docs else None,

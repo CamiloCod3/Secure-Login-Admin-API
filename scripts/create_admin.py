@@ -6,7 +6,7 @@ from sqlalchemy.exc import SQLAlchemyError
 from app.database import AsyncSessionLocal as SessionLocal
 from app.models.user_models import UserModel
 from app.auth.password_utils import hash_password
-from app.schemas.config_schema import settings  # Adjust the import path as necessary
+from app.schemas.config_schema import settings
 
 # Set up logging
 log_level = logging.DEBUG if settings.environment == "development" else logging.INFO

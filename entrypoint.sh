@@ -15,7 +15,7 @@ while ! pg_isready -U "$POSTGRES_USER" -d "$POSTGRES_DB" -h "$POSTGRES_HOST" -p 
 done
  
 echo "Initializing database for user management..."
-# Execute the SQL script, assuming init_users.sql is idempotent and can safely be run multiple times
+# Execute the SQL script, assuming init_users.sql is idempotent
 PGPASSWORD=$POSTGRES_PASSWORD psql -U "$POSTGRES_USER" -d "$POSTGRES_DB" -h "$POSTGRES_HOST" -p "$POSTGRES_PORT" -a -f /app/sql/init_users.sql
 
 echo "Ensuring admin user is created..."

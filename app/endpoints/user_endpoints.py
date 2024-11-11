@@ -14,7 +14,7 @@ router = APIRouter()
 @router.post("/users/", response_model=UserCreateResponseSchema, status_code=status.HTTP_201_CREATED)
 @limiter.limit("5/minute")  # Set rate limit
 async def create_user_endpoint(
-    request: Request,  # Added request argument for rate limiting
+    request: Request,
     response: Response,
     user: UserCreateSchema,
     db: AsyncSession = Depends(get_db),

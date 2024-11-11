@@ -2,7 +2,6 @@ from dotenv import load_dotenv
 from pydantic_settings import BaseSettings
 from pydantic import EmailStr, Field
 
-# Load environment variables from the .env file
 load_dotenv()
 
 class Settings(BaseSettings):

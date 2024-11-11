@@ -6,9 +6,9 @@ Welcome to my FastAPI Secure Login & Admin API project! 🎉 This began as a lea
 
 This project was created for learning and demonstration purposes. While it follows best practices, certain configurations may be more advanced or simplified than needed in a production setting. **Use this as a foundation and adapt to your specific needs when building production-ready applications.** Also, note that this project is compatible with the following versions:
 
-- **Pydantic:** 2.5.1
+- **Pydantic:** 2.7.0
 - **SQLAlchemy:** 2.0.23
-- **FastAPI:** 0.104.1
+- **FastAPI:** 0.115.3
 
 ## 📚 About This Project
 
