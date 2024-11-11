@@ -1,5 +1,5 @@
 from jose import jwt, JWTError
-from datetime import datetime, timedelta
+from datetime import datetime, timedelta, timezone
 from fastapi import HTTPException, Response
 from ..schemas.config_schema import settings
 
@@ -10,7 +10,7 @@ class JWTTokenHandler:
     def create_access_token(*, data: dict, expires_delta: int = None):
         expires_in_minutes = expires_delta if expires_delta is not None else settings.access_token_expires_delta
         to_encode = data.copy()
-        expire = datetime.utcnow() + timedelta(minutes=expires_in_minutes)
+        expire = datetime.now(timezone.utc) + timedelta(minutes=expires_in_minutes)  # Updated to timezone-aware
         to_encode.update({"exp": expire})
         encoded_jwt = jwt.encode(to_encode, settings.secret_key, algorithm=settings.algorithm)
         return encoded_jwt
@@ -19,7 +19,7 @@ class JWTTokenHandler:
     def create_refresh_token(*, data: dict, expires_delta: int = None):
         expires_in_minutes = expires_delta if expires_delta is not None else settings.refresh_token_expires_delta
         to_encode = data.copy()
-        expire = datetime.utcnow() + timedelta(minutes=expires_in_minutes)
+        expire = datetime.now(timezone.utc) + timedelta(minutes=expires_in_minutes)  # Updated to timezone-aware
         to_encode.update({"exp": expire})
         encoded_jwt = jwt.encode(to_encode, settings.secret_key, algorithm=settings.algorithm)
         return encoded_jwt
